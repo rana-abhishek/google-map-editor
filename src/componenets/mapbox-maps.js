@@ -1,95 +1,112 @@
-import React, { useEffect, useState } from "react";
-import ReactMapboxGl, { Layer, Feature, Source } from "react-mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+/// app.js
+import React from "react";
+import DeckGL from "@deck.gl/react";
+import { MapView, FirstPersonView } from "@deck.gl/core";
 
-const Map = ReactMapboxGl({
-  accessToken:
-    "pk.eyJ1IjoiYWJoaXNoZWstcmFuYSIsImEiOiJjbDB0cjl5d3gwb2ZiM2puNXhwMTA0Mm96In0.OP53G4BnNBQse6OJc0oNBg",
-});
+import { PolygonLayer } from "@deck.gl/layers";
+import { StaticMap } from "react-map-gl";
 
-const layerPaint = {
-  "heatmap-weight": {
-    property: "priceIndicator",
-    type: "exponential",
-    stops: [
-      [0, 0],
-      [5, 2],
-    ],
-  },
-  // Increase the heatmap color weight weight by zoom level
-  // heatmap-ntensity is a multiplier on top of heatmap-weight
-  "heatmap-intensity": {
-    stops: [
-      [0, 0],
-      [5, 1.2],
-    ],
-  },
-  // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
-  // Begin color ramp at 0-stop with a 0-transparancy color
-  // to create a blur-like effect.
-  "heatmap-color": [
-    "interpolate",
-    ["linear"],
-    ["heatmap-density"],
-    0,
-    "rgba(33,102,172,0)",
-    0.25,
-    "rgb(103,169,207)",
-    0.5,
-    "rgb(209,229,240)",
-    0.8,
-    "rgb(253,219,199)",
-    1,
-    "rgb(239,138,98)",
-    2,
-    "rgb(178,24,43)",
-  ],
-  // Adjust the heatmap radius by zoom level
-  "heatmap-radius": {
-    stops: [
-      [0, 1],
-      [5, 50],
-    ],
-  },
+// Viewport settings
+const INITIAL_VIEW_STATE = {
+    longitude: -122.4,
+    latitude: 37.74,
+    zoom: 11,
+    maxZoom: 20,
+    pitch: 30,
+    bearing: 0
 };
 
-const MapboxMaps = (props) => {
-  const [coordinates, setCoordinates] = useState([]);
+// Data to be used by the LineLayer
+const data = [
+  {
+    // Simple polygon (array of coords)
+    contour: [
+      [-122.4, 37.7],
+      [-122.4, 37.8],
+      [-122.5, 37.8],
+      [-122.5, 37.7],
+      [-122.4, 37.7],
+    ],
+    zipcode: 94107,
+    population: 26599,
+    area: 6.11,
+  },
+  {
+    // Complex polygon with holes (array of rings)
+    contour: [
+      [
+        [-122.4, 37.7],
+        [-122.4, 37.8],
+        [-122.5, 37.8],
+        [-122.5, 37.7],
+        [-122.4, 37.7],
+      ],
+      [
+        [-122.45, 37.73],
+        [-122.47, 37.76],
+        [-122.47, 37.71],
+        [-122.45, 37.73],
+      ],
+    ],
+    zipcode: 94107,
+    population: 26599,
+    area: 6.11,
+  },
+];
 
-  useEffect(() => {
-    console.log("Render for first time");
-    const dataLoad = async () => {
-      const data = await fetch(
-        "https://traffic.nayan.co/api/maps-details/allAppVio"
-      );
-      const result = await data.json();
-      setCoordinates(result);
-    };
-    dataLoad();
-  }, []);
+const MAPBOX_ACCESS_TOKEN =
+  "pk.eyJ1IjoiYWJoaXNoZWstcmFuYSIsImEiOiJjbDB0cjl5d3gwb2ZiM2puNXhwMTA0Mm96In0.OP53G4BnNBQse6OJc0oNBg";
 
+const layers = [
+    new PolygonLayer({
+        id: 'PolygonLayer',
+        data: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/sf-zipcodes.json',
+        
+        /* props from PolygonLayer class */
+        
+        // elevationScale: 1,
+        extruded: true,
+        filled: true,
+        getElevation: d => d.population / d.area / 10,
+        getFillColor: d => [d.population / d.area / 60, 140, 0],
+        getLineColor: [80, 80, 80],
+        getLineWidth: d => 1,
+        getPolygon: d => d.contour,
+        // lineJointRounded: false,
+        // lineMiterLimit: 4,
+        // lineWidthMaxPixels: Number.MAX_SAFE_INTEGER,
+        lineWidthMinPixels: 1,
+        // lineWidthScale: 1,
+        // lineWidthUnits: 'meters',
+        // material: true,
+        stroked: true,
+        wireframe: true,
+        
+        /* props inherited from Layer class */
+        
+        // autoHighlight: false,
+        // coordinateOrigin: [0, 0, 0],
+        // coordinateSystem: COORDINATE_SYSTEM.LNGLAT,
+        // highlightColor: [0, 0, 128, 128],
+        // modelMatrix: null,
+        // opacity: 1,
+        pickable: true,
+        // visible: true,
+        // wrapLongitude: false,
+      })
+];
+
+const MapboxMaps = ({ coordinates }) => {
   return (
     coordinates.length && (
-      <Map
-        style="mapbox://styles/mapbox/streets-v9"
-        containerStyle={{
-          height: "100vh",
-          width: "100vw",
-        }}
-        zoom={[1]}
-        onRender={() => {
-          console.log("Map rendered");
-        }}
+      <DeckGL
+        initialViewState={INITIAL_VIEW_STATE}
+        controller={true}
+        layers={layers}
+        getTooltip={({object}) => object && `${object.zipcode}\nPopulation: ${object.population}`}
       >
-        <Layer type="heatmap" paint={layerPaint}>
-          {coordinates.map((coord) => (
-            <Feature
-              key={coord.vioId}
-              coordinates={[+coord.vioLat, +coord.vioLon]}
-            />
-          ))}
-        </Layer>
-      </Map>
+        <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
+      </DeckGL>
     )
   );
 };
