@@ -17,21 +17,21 @@ function App() {
       const result = await data.json();
       setTotal([...result,... result]);
     };
-    dataLoad();
+    // dataLoad();
   }, []);
 
   return (
     <div className="App">
-      <div  style={{position: 'absolute', top: 0, left: 0, zIndex: 1}}>
+      {/* <div  style={{position: 'absolute', top: 0, left: 0, zIndex: 1}}>
         <label>Plotted map points: </label>
         <input min={1} max={total.length} onChange={e => +e.target.value === 0 ? 1 : (+e.target.value < total.length ? setCurrent(+e.target.value) : +total.length)} value={current}/>
       </div>
       <div style={{position: 'absolute', top: 0, right: 0, zIndex: 1}}>
         <label>Total map points: </label>
         <input disabled={true} value={total.length}/>
-      </div>
+      </div> */}
       
-      <MapboxMaps coordinates={total.splice(0, current)}/>
+      <MapboxMaps />
     </div>
   );
 }
