@@ -5,18 +5,25 @@ import { KMLLoader } from "@loaders.gl/kml";
 import { CSVLoader } from "@loaders.gl/csv";
 import { load } from "@loaders.gl/core";
 import { PolygonLayer, GeoJsonLayer } from "@deck.gl/layers";
-import {
-  StaticMap,
-  _MapContext as MapContext,
-  NavigationControl,
-} from "react-map-gl";
+import { StaticMap } from "react-map-gl";
 import { FlyToInterpolator } from "deck.gl";
-import { EditableGeoJsonLayer } from "@nebula.gl/layers";
+import {
+  EditableGeoJsonLayer,
+  DrawPolygonMode,
+  ViewMode,
+  ModifyMode,
+} from "nebula.gl";
 
 const KML_FILE_PATH = "./data/polygon_testing.kml";
 
 const MAPBOX_ACCESS_TOKEN =
   "pk.eyJ1IjoiYWJoaXNoZWstcmFuYSIsImEiOiJjbDB0cjl5d3gwb2ZiM2puNXhwMTA0Mm96In0.OP53G4BnNBQse6OJc0oNBg";
+
+const MODES = [
+  { id: "view", text: "Viewing polygons", handler: ViewMode },
+  { id: "drawPolygon", text: "Draw Polygon", handler: DrawPolygonMode },
+  { id: "editing", text: "Edit Feature", handler: ModifyMode },
+];
 
 const averageGeolocation = (coords) => {
   if (coords.length === 1) {
@@ -52,7 +59,14 @@ const averageGeolocation = (coords) => {
   };
 };
 
+const selectedFeatureIndexes = [];
+
 const MapboxMaps = ({ coordinates }) => {
+  const [mapCoords, setMapCoords] = useState({
+    type: "FeatureCollection",
+    features: [],
+  });
+
   const [layers, setLayers] = useState([
     new PolygonLayer({
       id: "PolygonLayer",
@@ -79,34 +93,46 @@ const MapboxMaps = ({ coordinates }) => {
     pitch: 0,
   });
 
+  const [editorMode, setEditorMode] = useState({
+    id: null,
+    handler: null,
+  });
+
   useEffect(() => {
     const parseData = async () => {
       const newLayerData = await load(KML_FILE_PATH, KMLLoader);
+      setMapCoords(newLayerData);
       const coordinates = newLayerData.features.flatMap(
         (feat) => feat.geometry.coordinates
       );
       const flatttenedCoordinates = coordinates.flat(1);
       const { latitude, longitude } = averageGeolocation(flatttenedCoordinates);
 
-      const newLayer = new GeoJsonLayer({
-        id: "geojson-layer",
-        data: newLayerData,
-        filled: true,
-        pickable: true,
-        getPosition: (d) => d.geometry.coordinates,
-      });
+      console.log(editorMode);
 
-      setLayers((prevLayers) => [...prevLayers, newLayer]);
+      if (mapCoords) {
+        console.log(mapCoords);
+        const newLayer = new EditableGeoJsonLayer({
+          id: "geojson-layer",
+          data: mapCoords,
+          mode: DrawPolygonMode,
+          selectedFeatureIndexes,
+          onEdit: ({ updatedData, editType }) => {
+            setMapCoords(updatedData);
+          },
+        });
+        setLayers((prevLayers) => [...prevLayers, newLayer]);
 
-      setViewState({
-        longitude,
-        latitude,
-        zoom: 16,
-        pitch: 0,
-        bearing: 0,
-        transitionDuration: 4000,
-        transitionInterpolator: new FlyToInterpolator(),
-      });
+        setViewState({
+          longitude,
+          latitude,
+          zoom: 16,
+          pitch: 0,
+          bearing: 0,
+          transitionDuration: 1000,
+          transitionInterpolator: new FlyToInterpolator(),
+        });
+      }
     };
     parseData();
   }, []);
