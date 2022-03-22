@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Polygon testing</name>
+    <Style id="poly-000000-1200-77-normal">
+      <LineStyle>
+        <color>ff000000</color>
+        <width>1.2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4d000000</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <Style id="poly-000000-1200-77-highlight">
+      <LineStyle>
+        <color>ff000000</color>
+        <width>1.8</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4d000000</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <StyleMap id="poly-000000-1200-77">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#poly-000000-1200-77-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#poly-000000-1200-77-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>Polygon 1</name>
+      <description>Testing</description>
+      <styleUrl>#poly-000000-1200-77</styleUrl>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              77.0923301,28.5910876,0
+              77.0921907,28.5910217,0
+              77.0921907,28.5904093,0
+              77.0926306,28.5903999,0
+              77.0934138,28.5903999,0
+              77.0938429,28.5903717,0
+              77.0938966,28.5910028,0
+              77.0938966,28.5912007,0
+              77.0942399,28.5912101,0
+              77.0942399,28.5914268,0
+              77.0950553,28.5914362,0
+              77.0950445,28.5918318,0
+              77.0953557,28.5927739,0
+              77.0947978,28.5929623,0
+              77.0944008,28.5925666,0
+              77.0937142,28.5918036,0
+              77.0930704,28.5913985,0
+              77.0923301,28.5910876,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>
