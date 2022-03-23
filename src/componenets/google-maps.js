@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { DrawingManager, Polygon } from "@react-google-maps/api";
 import geoJsonData from "./geoJsonData.json";
+import geoJsonData2 from "./geoJsonData_2.json";
 
 const containerStyle = {
   width: "100%",
@@ -27,9 +28,21 @@ function GoogleMapsComponent() {
   const [map, setMap] = React.useState(null);
   const [polygons, setPolygons] = React.useState([]);
 
+  let dataLayer1 = useRef();
+  let dataLayer2 = useRef();
+
   const onLoad = React.useCallback(function callback(map) {
     setMap(map);
-    map.data.addGeoJson(geoJsonData);
+    dataLayer1.current = new window.google.maps.Data({ map: map });
+    dataLayer2.current = new window.google.maps.Data({ map: map });
+    dataLayer1.current.addGeoJson(geoJsonData);
+    dataLayer2.current.addGeoJson(geoJsonData2);
+    dataLayer1.current.setStyle({ draggable: false, editable: false });
+    dataLayer2.current.setStyle({ draggable: false, editable: false });
+    dataLayer1.current.addListener("click", toggleDataLayerEditFlag);
+    dataLayer2.current.addListener("click", toggleDataLayerEditFlag);
+    dataLayer1.current.addListener("dblclick", removeDataClickHandler);
+    dataLayer2.current.addListener("dblclick", removeDataClickHandler);
   }, []);
 
   const onUnmount = React.useCallback(function callback(map) {
@@ -46,14 +59,19 @@ function GoogleMapsComponent() {
     this.setDraggable(newEditState);
   }
 
-  function removePolygonClickHandler(polygon) {
+  function removeDataClickHandler() {
     this.setMap(null);
+  }
+
+  function toggleDataLayerEditFlag(event) {
+    const { editable, draggable } = this.getStyle();
+    this.setStyle({ draggable: !draggable, editable: !editable });
   }
 
   const onPolygonComplete = (polygon) => {
     polygon.setEditable(false);
     polygon.addListener("click", editPolygonClickHandler);
-    polygon.addListener("dblclick", removePolygonClickHandler);
+    polygon.addListener("dblclick", removeDataClickHandler);
   };
 
   return isLoaded ? (
@@ -69,7 +87,7 @@ function GoogleMapsComponent() {
     >
       <></>
       <DrawingManager
-        drawingMode={window.google.maps.drawing.OverlayType.POLYGON}
+        drawingMode={""}
         onLoad={onLoadDrawingManager}
         onPolygonComplete={onPolygonComplete}
         options={{
