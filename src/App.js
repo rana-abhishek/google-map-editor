@@ -118,7 +118,7 @@ function App() {
   }, []);
 
   return (
-    <div className="App" style={{ height: "100%" }}>
+    <div className="App" style={{ height: "100vh" }}>
       {/* {!isLoading && center.latitude && center.longitude && (
         <EditableMaps
           latitude={center.latitude}
