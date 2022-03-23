@@ -12,6 +12,7 @@ import {
   DrawPolygonMode,
   ViewMode,
   ModifyMode,
+  SelectionLayer,
 } from "nebula.gl";
 
 const KML_FILE_PATH = "./data/polygon_testing.kml";
@@ -135,6 +136,25 @@ const MapboxMaps = ({ coordinates }) => {
       }
     };
     parseData();
+
+    setLayers((prevLayers) => [
+      ...prevLayers,
+      new SelectionLayer({
+        id: "selection",
+        selectionType: this.state.selectionTool,
+        onSelect: ({ pickingInfos }) => {
+          this.setState({
+            selectedFeatureIndexes: pickingInfos.map((pi) => pi.index),
+          });
+        },
+        layerIds: ["geojson-layer"],
+
+        getTentativeFillColor: () => [255, 0, 255, 100],
+        getTentativeLineColor: () => [0, 0, 255, 255],
+        getTentativeLineDashArray: () => [0, 0],
+        lineWidthMinPixels: 3,
+      }),
+    ]);
   }, []);
 
   return (

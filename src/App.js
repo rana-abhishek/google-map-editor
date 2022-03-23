@@ -9,7 +9,7 @@ import { DrawPolygonMode, ViewMode, ModifyMode } from "nebula.gl";
 import EditableMaps from "./componenets/editable-maps";
 import EditMaps from "./componenets/edit-maps";
 
-const KML_FILE_PATH = "./data/polygon_testing.kml";
+const KML_FILE_PATH = "./data/polygons_final.kml";
 
 const averageGeolocation = (coords) => {
   if (coords.length === 1) {
@@ -118,16 +118,13 @@ function App() {
 
   return (
     <div className="App">
-      {renderToolbar()}
       {!isLoading && center.latitude && center.longitude && (
         <EditableMaps
           latitude={center.latitude}
           longitude={center.longitude}
           coordinates={mapCoords}
-          editorMode={editorMode.handler}
         />
       )}
-      {/* <EditMaps /> */}
     </div>
   );
 }
