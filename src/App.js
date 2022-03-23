@@ -8,6 +8,7 @@ import { KMLLoader } from "@loaders.gl/kml";
 import { DrawPolygonMode, ViewMode, ModifyMode } from "nebula.gl";
 import EditableMaps from "./componenets/editable-maps";
 import EditMaps from "./componenets/edit-maps";
+import GoogleMapsComponent from "./componenets/google-maps";
 
 const KML_FILE_PATH = "./data/polygons_final.kml";
 
@@ -117,14 +118,15 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      {!isLoading && center.latitude && center.longitude && (
+    <div className="App" style={{ height: "100%" }}>
+      {/* {!isLoading && center.latitude && center.longitude && (
         <EditableMaps
           latitude={center.latitude}
           longitude={center.longitude}
           coordinates={mapCoords}
         />
-      )}
+      )} */}
+      <GoogleMapsComponent />
     </div>
   );
 }

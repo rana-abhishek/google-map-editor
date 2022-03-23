@@ -11,6 +11,7 @@
     "@nebula.gl/editor": "^1.0.2-alpha.2",
     "@nebula.gl/layers": "^1.0.2-alpha.2",
     "@nebula.gl/overlays": "^1.0.2-alpha.2",
+    "@react-google-maps/api": "^2.7.0",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
