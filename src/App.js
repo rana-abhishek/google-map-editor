@@ -119,8 +119,17 @@ function App(props) {
 
   return (
     <div className="App" style={{ height: "100vh" }}>
-      <div style={{ position: "absolute", top: 0, left: 0 }}>
-        Message at init - {{ props }}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 10,
+          backgroundColor: "#fff",
+          padding: "10px",
+        }}
+      >
+        Message from HTML - {props.message} {console.log(props.message)}
       </div>
       {/* {!isLoading && center.latitude && center.longitude && (
         <EditableMaps
