@@ -52,7 +52,7 @@ const MODES = [
   { id: "editing", text: "Edit Feature", handler: ModifyMode },
 ];
 
-function App({ message }) {
+function App(props) {
   const [mapCoords, setMapCoords] = useState({
     type: "FeatureCollection",
     features: [],
@@ -120,7 +120,7 @@ function App({ message }) {
   return (
     <div className="App" style={{ height: "100vh" }}>
       <div style={{ position: "absolute", top: 0, left: 0 }}>
-        Message at init - {{ message }}
+        Message at init - {{ props }}
       </div>
       {/* {!isLoading && center.latitude && center.longitude && (
         <EditableMaps
