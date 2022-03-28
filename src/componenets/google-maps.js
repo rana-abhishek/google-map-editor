@@ -3,6 +3,7 @@ import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { DrawingManager, Polygon } from "@react-google-maps/api";
 import geoJsonData from "./geoJsonData.json";
 import geoJsonData2 from "./geoJsonData_2.json";
+import geoJsonData3 from "./geoJsonData_3.json";
 
 const containerStyle = {
   width: "100%",
@@ -30,15 +31,19 @@ function GoogleMapsComponent() {
 
   let dataLayer1 = useRef();
   let dataLayer2 = useRef();
+  let dataLayer3 = useRef();
 
   const onLoad = React.useCallback(function callback(map) {
     setMap(map);
     dataLayer1.current = new window.google.maps.Data({ map: map });
     dataLayer2.current = new window.google.maps.Data({ map: map });
+    dataLayer3.current = new window.google.maps.Data({ map: map });
     dataLayer1.current.addGeoJson(geoJsonData);
     dataLayer2.current.addGeoJson(geoJsonData2);
+    dataLayer3.current.addGeoJson(geoJsonData3);
     dataLayer1.current.setStyle({ draggable: false, editable: false });
     dataLayer2.current.setStyle({ draggable: false, editable: false });
+    dataLayer3.current.setStyle({ draggable: false, editable: false });
     dataLayer1.current.addListener("click", toggleDataLayerEditFlag);
     dataLayer2.current.addListener("click", toggleDataLayerEditFlag);
     dataLayer1.current.addListener("dblclick", removeDataClickHandler);

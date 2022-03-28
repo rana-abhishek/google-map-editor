@@ -31,6 +31,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:widget": "parcel build src/index.js --no-source-maps -d docs --no-minify",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -51,5 +52,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5"
   }
 }
