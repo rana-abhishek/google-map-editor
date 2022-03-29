@@ -10,7 +10,7 @@ import EditableMaps from "./componenets/editable-maps";
 import EditMaps from "./componenets/edit-maps";
 import GoogleMapsComponent from "./componenets/google-maps";
 
-const KML_FILE_PATH = "./data/polygons_final.kml";
+const KML_FILE_PATH = "./data/polygons_testing.kml";
 
 const averageGeolocation = (coords) => {
   if (coords.length === 1) {
