@@ -10,6 +10,7 @@ import { DrawPolygonMode, ViewMode, ModifyMode } from "nebula.gl";
 import EditableMaps from "./componenets/editable-maps";
 import EditMaps from "./componenets/edit-maps";
 import GoogleMapsComponent from "./componenets/google-maps";
+import pubsub from "./pubsub";
 
 const KML_FILE_PATH = "./data/polygons_final.kml";
 
@@ -54,12 +55,11 @@ const MODES = [
 ];
 
 function App(props) {
-  const googleRef = useRef();
   const [mapCoords, setMapCoords] = useState({
     type: "FeatureCollection",
     features: [],
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [message, setMessage] = useState("Default message");
   const [center, setCenter] = useState({
     latitude: 0,
     longitude: 0,
@@ -102,7 +102,6 @@ function App(props) {
   };
 
   useEffect(() => {
-    setIsLoading(true);
     const dataLoad = async () => {
       const newLayerData = await load(KML_FILE_PATH, KMLLoader);
       setMapCoords(newLayerData);
@@ -112,12 +111,14 @@ function App(props) {
       const flatttenedCoordinates = coordinates.flat(1);
       const { latitude, longitude } = averageGeolocation(flatttenedCoordinates);
       setCenter((prevState) => ({ ...prevState, latitude, longitude }));
-
-      setIsLoading(false);
     };
     dataLoad();
+
+    pubsub.subscribe("updateMessage", (data) => {
+      console.log(data);
+      setMessage(data.msg);
+    });
   }, []);
-  console.log(googleRef);
   return (
     <div className="App" style={{ height: "100vh" }}>
       <div
@@ -128,21 +129,12 @@ function App(props) {
           zIndex: 10,
           backgroundColor: "#fff",
           padding: "10px",
+          border: "2px solid black",
         }}
       >
-        Message from HTML - {props.message}
-        <button onClick={(e) => props.sendMessageToHost("Message from comp")}>
-          Send message to host
-        </button>
+        Message from HTML: {message}
       </div>
-      {/* {!isLoading && center.latitude && center.longitude && (
-        <EditableMaps
-          latitude={center.latitude}
-          longitude={center.longitude}
-          coordinates={mapCoords}
-        />
-      )} */}
-      <GoogleMapsComponent ref={googleRef} />
+      <GoogleMapsComponent />
     </div>
   );
 }

@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
 import pubSub from "./pubsub";
 
 const widgetName = "maps-widget";
@@ -10,17 +9,11 @@ const widgetConfigName = widgetName + "Config";
 const defaultconfig = {
   someDefaultConfiguration: false,
 };
-let widgetComponent = null;
 
-const widgetDiv = document.getElementById("maps-widget");
+let message;
 
-function app(window) {
-  console.log(`${widgetName} starting`);
-  // If we don't already have a name for widget's global object
-  // assigned by the host, then they must be using the simple <script> tag method
-  // so we need to get our data out of that tag
+function StarterApp(window) {
   if (!window[widgetName]) {
-    console.log(widgetName, "-script");
     let tag = document.getElementById(`${widgetName}-script`);
 
     if (!tag) {
@@ -30,7 +23,6 @@ function app(window) {
     let rawData = tag.getAttribute("data-config");
     rawData = rawData.replace(/'/g, '"');
     let data = JSON.parse(rawData);
-    console.log(data);
 
     window[widgetName] = data.name;
 
@@ -38,45 +30,32 @@ function app(window) {
     (placeholder.q = []).push(["init", data.config]);
 
     window[window[widgetName]] = placeholder;
-    console.log(window[widgetName]);
   }
 
   let placeholder = window[window[widgetName]];
 
   // override temporary (until the app loaded) handler
   // for widget's API calls
-  window[window[widgetName]] = apiHandler;
+  window[window[widgetName]] = ApiHandler;
   window[widgetConfigName] = defaultconfig;
-  window["onMessageReceived"] = sendMessageToHostHandler;
-  console.log(window["onMessageReceived"]);
 
   if (placeholder) {
-    console.log(`${widgetName} placeholder found`);
-
     let queue = placeholder.q;
     if (queue) {
-      console.log(`${widgetName} placeholder queue found`);
-
       for (var i = 0; i < queue.length; i++) {
-        apiHandler(queue[i][0], queue[i][1]);
+        ApiHandler(queue[i][0], queue[i][1]);
       }
     }
   }
 }
 
-function sendMessageToHostHandler(message = "Default message") {
-  console.log("Type: Message", "Content: ", message);
-}
-
 /**
     Method that handles all API calls
 */
-function apiHandler(api, params) {
+function ApiHandler(api, params) {
   if (!api) throw Error("API method required");
   api = api.toLowerCase();
   let config = window[widgetConfigName];
-
-  console.log(`Handling API call ${api}`, params, config);
 
   switch (api) {
     case "init":
@@ -86,39 +65,25 @@ function apiHandler(api, params) {
       // get a reference to the created widget component so we can
       // call methods as needed
       ReactDOM.render(
-        <App
-          message={"Default message"}
-          sendMessageToHost={sendMessageToHostHandler}
-        />,
+        <App message={message} />,
         document.getElementById(config.targetElementId)
       );
 
-      pubSub.subscribe("anEvent", config.subscriberCallback);
+      pubSub.subscribe("receiveMessagesFromClient", config.subscriberCallback);
       break;
     case "message":
       // Send the message to the current widget instance
-      console.log("Triggered events");
-
       const data = {
-        msg: "TOP SECRET DATA",
+        msg: params,
       };
 
-      pubSub.publish("anEvent", data);
-      // widgetComponent.current.setMessage(params);
-      break;
-    case "getstatus":
-      // Send the message to the current widget instance
-      console.log("Triggered events");
-      // pubSub.subscribe("anEvent", (data) => {
-      //   console.log(`"anEvent", was published with this data: "${data.msg}"`);
-      // });
-      // widgetComponent.current.setMessage(params);
+      pubSub.publish("updateMessage", data);
       break;
     default:
       throw Error(`Method ${api} is not supported`);
   }
 }
 
-app(window);
+StarterApp(window);
 
-export default app;
+export default StarterApp;

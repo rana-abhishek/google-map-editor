@@ -44,7 +44,7 @@
 
     <script>
       function subscriberEventHandler(data) {
-        console.log("Data from host HMTL", data);
+        console.log("Data from widget to host app", data);
       }
       (function (w, d, s, o, f, js, fjs) {
         w["maps-widget"] = o;
@@ -68,17 +68,9 @@
     <div>
       <button
         style="position: absolute; z-index: 100; right: 0; top: 0"
-        onclick="w1('message', 'message params')"
+        onclick="w1('message', 'Hello from HTML sandbox div')"
       >
-        Send Message
-      </button>
-    </div>
-    <div>
-      <button
-        style="position: absolute; z-index: 100; left: 0; bottom: 0"
-        onclick="w1('getstatus')"
-      >
-        Receive Message
+        Send Message to widget
       </button>
     </div>
     <!--

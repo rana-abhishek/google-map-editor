@@ -4,6 +4,7 @@ import { DrawingManager, Polygon } from "@react-google-maps/api";
 import geoJsonData from "./geoJsonData.json";
 import geoJsonData2 from "./geoJsonData_2.json";
 import geoJsonData3 from "./geoJsonData_3.json";
+import pubsub from "../pubsub";
 // import geoJsonData4 from "./ne_10m_admin_1_states_provinces.json";
 
 const containerStyle = {
@@ -81,7 +82,7 @@ function GoogleMapsComponent() {
     dataLayer22.current = new window.google.maps.Data({ map: map });
     dataLayer23.current = new window.google.maps.Data({ map: map });
     dataLayer24.current = new window.google.maps.Data({ map: map });
-    dataLayer1.current.addGeoJson(geoJsonData2);
+    dataLayer1.current.addGeoJson(geoJsonData);
     dataLayer2.current.addGeoJson(geoJsonData2);
     dataLayer3.current.addGeoJson(geoJsonData2);
     dataLayer4.current.addGeoJson(geoJsonData2);
@@ -164,7 +165,7 @@ function GoogleMapsComponent() {
   }, []);
 
   const onLoadDrawingManager = (drawingManager) => {
-    console.log(drawingManager);
+    // console.log(drawingManager);
   };
 
   function editPolygonClickHandler(polygon) {
@@ -183,6 +184,10 @@ function GoogleMapsComponent() {
   }
 
   const onPolygonComplete = (polygon) => {
+    pubsub.publish("receiveMessagesFromClient", {
+      eventType: "New polygon created",
+      polygonId: polygon.zIndex,
+    });
     polygon.setEditable(false);
     polygon.addListener("click", editPolygonClickHandler);
     polygon.addListener("dblclick", removeDataClickHandler);
