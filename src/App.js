@@ -1,5 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
+import React, { useRef } from "react";
 import MapboxMaps from "./componenets/mapbox-maps";
 import { useEffect, useState } from "react";
 import { debounce } from "lodash";
@@ -9,6 +10,7 @@ import { DrawPolygonMode, ViewMode, ModifyMode } from "nebula.gl";
 import EditableMaps from "./componenets/editable-maps";
 import EditMaps from "./componenets/edit-maps";
 import GoogleMapsComponent from "./componenets/google-maps";
+import pubsub from "./pubsub";
 
 const KML_FILE_PATH = "#{RAILS_ROOT}/data/polygons_final.kml";
 
@@ -57,7 +59,7 @@ function App(props) {
     type: "FeatureCollection",
     features: [],
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [message, setMessage] = useState("Default message");
   const [center, setCenter] = useState({
     latitude: 0,
     longitude: 0,
@@ -74,7 +76,6 @@ function App(props) {
     const mode = MODES.find((m) => m.id === modeId);
     const modeHandler = mode ? new mode.handler() : null;
     setEditorMode({ modeId, modeHandler });
-    console.log(editorMode);
   };
 
   const renderToolbar = () => {
@@ -101,7 +102,6 @@ function App(props) {
   };
 
   useEffect(() => {
-    setIsLoading(true);
     const dataLoad = async () => {
       const newLayerData = await load(KML_FILE_PATH, KMLLoader);
       setMapCoords(newLayerData);
@@ -111,12 +111,14 @@ function App(props) {
       const flatttenedCoordinates = coordinates.flat(1);
       const { latitude, longitude } = averageGeolocation(flatttenedCoordinates);
       setCenter((prevState) => ({ ...prevState, latitude, longitude }));
-
-      setIsLoading(false);
     };
     dataLoad();
-  }, []);
 
+    pubsub.subscribe("updateMessage", (data) => {
+      console.log(data);
+      setMessage(data.msg);
+    });
+  }, []);
   return (
     <div className="App" style={{ height: "100vh" }}>
       <div
@@ -127,17 +129,11 @@ function App(props) {
           zIndex: 10,
           backgroundColor: "#fff",
           padding: "10px",
+          border: "2px solid black",
         }}
       >
-        Message from HTML - {props.message} {console.log(props.message)}
+        Message from HTML: {message}
       </div>
-      {/* {!isLoading && center.latitude && center.longitude && (
-        <EditableMaps
-          latitude={center.latitude}
-          longitude={center.longitude}
-          coordinates={mapCoords}
-        />
-      )} */}
       <GoogleMapsComponent />
     </div>
   );
