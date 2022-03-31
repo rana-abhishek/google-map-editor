@@ -92,6 +92,8 @@ function apiHandler(api, params) {
         />,
         document.getElementById(config.targetElementId)
       );
+
+      pubSub.subscribe("anEvent", config.subscriberCallback);
       break;
     case "message":
       // Send the message to the current widget instance
@@ -107,9 +109,9 @@ function apiHandler(api, params) {
     case "getstatus":
       // Send the message to the current widget instance
       console.log("Triggered events");
-      pubSub.subscribe("anEvent", (data) => {
-        console.log(`"anEvent", was published with this data: "${data.msg}"`);
-      });
+      // pubSub.subscribe("anEvent", (data) => {
+      //   console.log(`"anEvent", was published with this data: "${data.msg}"`);
+      // });
       // widgetComponent.current.setMessage(params);
       break;
     default:

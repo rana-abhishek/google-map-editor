@@ -43,6 +43,9 @@
     ></script> -->
 
     <script>
+      function subscriberEventHandler(data) {
+        console.log("Data from host HMTL", data);
+      }
       (function (w, d, s, o, f, js, fjs) {
         w["maps-widget"] = o;
         w[o] =
@@ -56,7 +59,10 @@
         js.async = 1;
         fjs.parentNode.insertBefore(js, fjs);
       })(window, document, "script", "w1", "../docs/index.js");
-      w1("init", { targetElementId: "root" });
+      w1("init", {
+        targetElementId: "root",
+        subscriberCallback: subscriberEventHandler,
+      });
     </script>
 
     <div>
