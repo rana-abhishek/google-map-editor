@@ -1,5 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
+import React, { useRef } from "react";
 import MapboxMaps from "./componenets/mapbox-maps";
 import { useEffect, useState } from "react";
 import { debounce } from "lodash";
@@ -53,6 +54,7 @@ const MODES = [
 ];
 
 function App(props) {
+  const googleRef = useRef();
   const [mapCoords, setMapCoords] = useState({
     type: "FeatureCollection",
     features: [],
@@ -74,7 +76,6 @@ function App(props) {
     const mode = MODES.find((m) => m.id === modeId);
     const modeHandler = mode ? new mode.handler() : null;
     setEditorMode({ modeId, modeHandler });
-    console.log(editorMode);
   };
 
   const renderToolbar = () => {
@@ -116,7 +117,7 @@ function App(props) {
     };
     dataLoad();
   }, []);
-
+  console.log(googleRef);
   return (
     <div className="App" style={{ height: "100vh" }}>
       <div
@@ -129,7 +130,10 @@ function App(props) {
           padding: "10px",
         }}
       >
-        Message from HTML - {props.message} {console.log(props.message)}
+        Message from HTML - {props.message}
+        <button onClick={(e) => props.sendMessageToHost("Message from comp")}>
+          Send message to host
+        </button>
       </div>
       {/* {!isLoading && center.latitude && center.longitude && (
         <EditableMaps
@@ -138,7 +142,7 @@ function App(props) {
           coordinates={mapCoords}
         />
       )} */}
-      <GoogleMapsComponent />
+      <GoogleMapsComponent ref={googleRef} />
     </div>
   );
 }
