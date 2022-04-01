@@ -46,6 +46,9 @@
       function subscriberEventHandler(data) {
         console.log("Data from widget to host app", data);
       }
+      function subscriberEventHandler2(data) {
+        console.log("Data from widget to host app 2", data);
+      }
       (function (w, d, s, o, f, js, fjs) {
         w["maps-widget"] = o;
         w[o] =
@@ -61,14 +64,32 @@
       })(window, document, "script", "w1", "../docs/index.js");
       w1("init", {
         targetElementId: "root",
-        subscriberCallback: subscriberEventHandler,
       });
+      w1("subscribe", {
+        type: "polygonAdded",
+        clbk: subscriberEventHandler,
+      });
+
+      w1("subscribe", {
+        type: "polygonAdded",
+        clbk: subscriberEventHandler2,
+      });
+
+      setTimeout(() => {
+        w1("unsubscribe", {
+          type: "polygonAdded",
+          clbk: subscriberEventHandler2,
+        });
+      }, 10000);
     </script>
 
     <div>
       <button
         style="position: absolute; z-index: 100; right: 0; top: 0"
-        onclick="w1('message', 'Hello from HTML sandbox div')"
+        onclick='w1("publish", {
+          type: "updateMessage",
+          msg: "Hello from HTML sandbox div",
+        })'
       >
         Send Message to widget
       </button>

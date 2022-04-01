@@ -69,15 +69,19 @@ function ApiHandler(api, params) {
         document.getElementById(config.targetElementId)
       );
 
-      pubSub.subscribe("receiveMessagesFromClient", config.subscriberCallback);
       break;
-    case "message":
+    case "subscribe":
+      pubSub.subscribe(params.type, params.clbk);
+      break;
+    case "unsubscribe":
+      pubSub.unsubscribe(params.type, params.clbk);
+      break;
+    case "publish":
       // Send the message to the current widget instance
       const data = {
-        msg: params,
+        msg: params.msg,
       };
-
-      pubSub.publish("updateMessage", data);
+      pubSub.publish(params.type, data);
       break;
     default:
       throw Error(`Method ${api} is not supported`);

@@ -12,4 +12,10 @@ module.exports = {
     }
     subscribers[event].push(callback);
   },
+  unsubscribe(event, callback) {
+    if (!subscribers[event]) {
+      subscribers[event] = [];
+    }
+    subscribers[event].pop(callback);
+  },
 };

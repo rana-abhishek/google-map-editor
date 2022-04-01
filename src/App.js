@@ -115,7 +115,6 @@ function App(props) {
     dataLoad();
 
     pubsub.subscribe("updateMessage", (data) => {
-      console.log(data);
       setMessage(data.msg);
     });
   }, []);

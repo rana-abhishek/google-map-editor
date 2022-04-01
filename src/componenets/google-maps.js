@@ -5,6 +5,8 @@ import geoJsonData from "./geoJsonData.json";
 import geoJsonData2 from "./geoJsonData_2.json";
 import geoJsonData3 from "./geoJsonData_3.json";
 import pubsub from "../pubsub";
+import { v4 as uuidv4 } from "uuid";
+
 // import geoJsonData4 from "./ne_10m_admin_1_states_provinces.json";
 
 const containerStyle = {
@@ -184,9 +186,9 @@ function GoogleMapsComponent() {
   }
 
   const onPolygonComplete = (polygon) => {
-    pubsub.publish("receiveMessagesFromClient", {
+    pubsub.publish("polygonAdded", {
       eventType: "New polygon created",
-      polygonId: polygon.zIndex,
+      polygonId: uuidv4(),
     });
     polygon.setEditable(false);
     polygon.addListener("click", editPolygonClickHandler);
