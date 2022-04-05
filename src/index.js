@@ -17,7 +17,7 @@ function StarterApp(window) {
     let tag = document.getElementById(`${widgetName}-script`);
 
     if (!tag) {
-      throw Error(`Cannot find script tag with id {$widgetName}-Script`);
+      throw Error(`Cannot find script tag with id ${widgetName}-Script`);
     }
 
     let rawData = tag.getAttribute("data-config");
